@@ -7,40 +7,47 @@
 
     #include "define.h"
 
-    extern struct stGroupObject mainGroup;
+    extern struct stGroupObject *mainGroup;
+    extern struct stGroupObject* baseGeometry;
+    extern struct stCamObject* mainCamera;
 
     enum {
 
-        obj_err     = -1,
-        obj_nogoup  = -1,
+        obj_err         = -1,
+        obj_nogoup      = -1,
 
-        obj_emty    = 0,
-        obj_base    = 1,
-        obj_group   = 2,
-        obj_cam     = 3,
-        obj_light   = 4,
-        obj_point   = 5,
+        obj_emty        = 0,
+        obj_base        = 1,
+        obj_group       = 2,
+        obj_cam         = 3,
+        obj_light       = 4,
+        obj_point       = 5,
+        obj_rectangle   = 6,
+        obj_2DSprite    = 7,
 
-        obj_bVisible = (1 << 7) // (ObjectType_Emty | ObjectType_bVisible)
+        // MAX 127 types object
+        // Незабувати додавати ці типи у функції!
+
+        obj_bVisible    = (1 << 7) // (obj_emty | obj_bVisible)
     };
 
-    struct stCoord {
+    typedef struct stCoord {
         float x, y, z;
-    }; // 12 bytes
+    } stCoord; // 12 bytes
 
-    struct stScale {
+    typedef struct stScale {
         float x, y, z;
-    }; // 12 bytes
+    } stScale; // 12 bytes
 
-    struct stAngle {
+    typedef struct stAngle {
         float x, y, z;
-    }; // 12 bytes
+    } stAngle; // 12 bytes
 
-    struct stColor {
+    typedef struct stColor {
         byte red, green, blue, alpha;
-    }; // 4 bytes
+    } stColor; // 4 bytes
 
-    struct stEmtyObject {
+    typedef struct stEmtyObject {
         byte type; // 0
 
         char* name;
@@ -72,24 +79,26 @@
         void setColorGreen(byte green);
         void setColorBlue(byte blue);
 
-    };
+        void setVisible(bool type);
+    } stEmtyObject;
 
-    struct stBaseObject : public stEmtyObject {
+    // TODO
+    typedef struct stBaseObject : public stEmtyObject {
         //byte type; // 1
 
         float* vertices;
         unsigned int lenVertices;
 
         void* fileModel;
-        void* fileTexture;
+        uint textureObj;
 
         // TODO
         uint addVertice(float x, float y, float z); // (-1) - error, else it is index.
         bool delVerticePos(float x, float y, float z);
         bool delVerticeIndex(uint index);
-    };
+    } stBaseObject;
 
-    struct stGroupObject : public stEmtyObject {
+    typedef struct stGroupObject : public stEmtyObject {
         //byte type; // 2
         struct stCoord lastPos;
         struct stAngle lastAngle;
@@ -100,26 +109,44 @@
 
         void addObject(struct stEmtyObject* object);
         void subObject(struct stEmtyObject* object);
-    };
+    } stGroupObject;
 
-    struct stCamObject : public stEmtyObject {
+    typedef struct stCamObject : public stEmtyObject {
         //byte type; // 3
-    };
-
-    struct stLightObject : public stEmtyObject {
+    } stCamObject;
+    
+    typedef struct stLightObject : public stEmtyObject {
         //byte type; // 4
-    };
+    } stLightObject;
 
-    struct stPointObject : public stEmtyObject {
+    typedef struct stPointObject : public stEmtyObject {
         //byte type; // 5
-    };
+    } stPointObject;
+
+    typedef struct stRectangleObject : public stEmtyObject {
+        //byte type; // 6
+        struct stCoord pos2;
+        struct stCoord pos3;
+        struct stCoord pos4;
+    } stRectangleObject;
+
+    typedef struct st2DSpriteObject : public stEmtyObject {
+        //byte type; // 7
+        void* fileModel;
+        uint textureObj;
+
+        struct stCoord pos2;
+    } st2DSpriteObject;
 
     struct stEmtyObject* createObject(struct stGroupObject* group /* can be NULL - MainGroup or (-1) - without group */, uint8_t type, struct stCoord* coord /* can be null */, struct stAngle* angle /* can be null */, struct stScale* scale /* can be null */);
     void delObject(struct stEmtyObject* object);
     void moveObject(struct stEmtyObject* object, struct stGroupObject* toGroup);
     struct stEmtyObject* copyObject(struct stEmtyObject* object, struct stGroupObject* toGroup); // TODO
+    uint getObjectSizeType(struct stEmtyObject* object);
     struct stGroupObject* getMainGroup();
     void objectSystemInit();
+    struct stEmtyObject* findObjectByName(struct stGroupObject* group, char* name /*can be null*/, uint ignoreElements);
+    struct stEmtyObject* findObjectByType(struct stGroupObject* group, byte type, uint ignoreElements);
     void debugObject(struct stEmtyObject* object);
 
 #endif // OBJECTSYSTEM_H_INCLUDED

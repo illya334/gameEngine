@@ -7,29 +7,43 @@
 
 #include "engineL0.h"
 
-// PUBLIC
-UINT windowWidth = FUSE_STD_WINDOW_WIDTH;
-UINT windowHeight = FUSE_STD_WINDOW_HEIGHT;
-bool fullscreen = FUSE_STD_FULLSCREEN;
-bool activeWindow = false;
-char keys[256] = {};
-float FOV = FUSE_STD_FOV;
-float MDR = FUSE_STD_MDR;
-bool modeOrtho = FUSE_MODE_ORTHO;
+#include <cstdio>
 
+// PUBLIC
+UINT	windowWidth = FUSE_STD_WINDOW_WIDTH;
+UINT	windowHeight = FUSE_STD_WINDOW_HEIGHT;
+bool	fullscreen = FUSE_STD_FULLSCREEN;
+bool	activeWindow = false;
+char	keys[256] = {};
+float	FOV = FUSE_STD_FOV;
+float	MDR = FUSE_STD_MDR;
+bool	modeOrtho = FUSE_MODE_ORTHO;
+float	mouseX = 0,
+		mouseY = 0;
+short	mouseDifX = 0,
+		mouseDifY = 0;
+
+const struct stStatusSystem statusSystem = {
+	"Windows",	// OSname
+	"x86",		// CPUarchitecture
+	true,		// supportKeyboard
+	true		// supportMouse
+};
 
 // PRIVAT
-HDC hDC;
-HGLRC hRC;
-HWND ghWnd;
-word* _keysIndexHandle = 0; // Stack indexs
-word* _keysButtonHandle = 0; // Result handling
-bool _handlingKeysEnable = false;
-RECT rect;
+HDC		hDC;
+HGLRC	hRC;
+HWND	ghWnd;
+word*	_keysIndexHandle = 0; // Stack indexs
+word*	_keysButtonHandle = 0; // Result handling
+bool	_handlingKeysEnable = false;
+RECT	rect;
 WINDOWPLACEMENT wpc;
-bool wasChangedFullscreen = true;
-bool shutdownEng = false;
-void (*cfuncEnd)();
+bool	wasChangedFullscreen = true;
+bool	shutdownEng = false;
+void	(*cfuncEnd)();
+short	mouseBaseX = 0,
+		mouseBaseY = 0;
 
 
 void setFullScreen(bool mode);
@@ -117,7 +131,7 @@ void openGLInit(HWND hwnd) {
 
 	if (!wglMakeCurrent(hDC, hRC)) errorFunc("wglMakeCurrent");
 
-	glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClearDepth(1.0);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);
@@ -233,6 +247,8 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case WM_CREATE:
 			openGLInit(hwnd);
+			mouseBaseX = windowWidth / 2;
+			mouseBaseY = windowHeight / 2;
 		break;
 
 		case WM_DESTROY:
@@ -258,6 +274,18 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 			windowHeight = HIWORD(lParam);
 			reSizeGLScene(LOWORD(lParam), HIWORD(lParam));
 		break;
+
+		/*case WM_MOUSEMOVE:
+			if(activeWindow){
+				//mouseX = ((float)(LOWORD(lParam)) / (float)windowWidth) * 2 - 1;
+				//mouseY = ((float)(HIWORD(lParam)) / (float)windowHeight) * 2 - 1;
+				mouseDifX = LOWORD(lParam) - mouseBaseX;
+				mouseDifY = HIWORD(lParam) - mouseBaseY;
+				SetCursorPos(windowWidth / 2, windowHeight / 2);
+				mouseBaseX = windowWidth / 2 + LOWORD(lParam) - mouseBaseX;
+				mouseBaseY = windowHeight / 2 + HIWORD(lParam) - mouseBaseY;
+			}
+		break;*/
 
 		default:
 			return DefWindowProcA(hwnd, msg, wParam, lParam);
@@ -388,4 +416,38 @@ void setFullScreen(bool mode) {
 void setOrtho(bool mode) {
 	modeOrtho = mode;
 	reSizeGLScene(windowWidth, windowHeight);
+}
+
+uint openFile(char* fileName, bool typeRead, bool typeWrite, bool typeCreate) {
+	int type = 0;
+	if (typeRead) type |= GENERIC_READ;
+	if (typeWrite) type |= GENERIC_WRITE;
+	return (uint)CreateFileA(fileName, type, null, null, typeCreate ? CREATE_NEW : OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, null);
+}
+
+uint getFileSize(uint file) {
+	return GetFileSize((HANDLE)file, null);
+}
+
+uint readFile(uint file, void *buf, uint bytesToRead /*if bytesToRead = -1 then will read all file*/, uint offset) {
+	if (bytesToRead == -1) bytesToRead = getFileSize(file);
+	DWORD cnt;
+	if (SetFilePointer((HANDLE)file, offset, null, FILE_BEGIN) == INVALID_SET_FILE_POINTER) return 0;
+	if (ReadFile((HANDLE)file, buf, bytesToRead, &cnt, null) == false) return 0;
+	return cnt;
+}
+
+uint writeFile(uint file, void* buf, uint bytesToWrite, uint offset) {
+	DWORD cnt;
+	if (SetFilePointer((HANDLE)file, offset, null, FILE_BEGIN) == INVALID_SET_FILE_POINTER) return 0;
+	if (WriteFile((HANDLE)file, buf, bytesToWrite, &cnt, null) == false) return 0;
+	return cnt;
+}
+
+bool closeFile(uint file) {
+	return CloseHandle((HANDLE)file);
+}
+
+bool deleteFile(char* fileName) {
+	return DeleteFileA(fileName);
 }

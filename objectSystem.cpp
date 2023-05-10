@@ -11,8 +11,9 @@ struct stCoord emtyCoord = { 0, 0, 0 };
 struct stAngle emtyAngle = { 0, 0, 0 };
 struct stScale emtyScale = { 0, 0, 0 };
 
-struct stGroupObject mainGroup = {};
-
+struct stGroupObject *mainGroup;
+struct stGroupObject *baseGeometry;
+struct stCamObject   *mainCamera;
 
 uint sortArrAdr(void **arr, uint elements) {
     if (arr == null) return 0;
@@ -32,14 +33,15 @@ uint sortArrAdr(void **arr, uint elements) {
 
 void *memcopy(void *arr, uint size) {
     byte* mem = (byte*)malloc(size);
-    for (uint i = 0; i < size; i++) mem[i] = arr[i];
+    for (uint i = 0; i < size; i++) mem[i] = ((byte*)arr)[i];
+    return (void*)mem;
 }
 
 struct stEmtyObject* createObject(struct stGroupObject* group /* can be NULL - MainGroup or (-1) - without group */, uint8_t type, struct stCoord* coord, struct stAngle* angle, struct stScale* scale) {
     struct stEmtyObject* newObject = NULL;
 
     if (group == 0)
-        group = &mainGroup;
+        group = mainGroup;
 
     uint sizeStruct = 0;
     switch (type & ~obj_bVisible) {
@@ -61,6 +63,12 @@ struct stEmtyObject* createObject(struct stGroupObject* group /* can be NULL - M
     case obj_point:
         sizeStruct = sizeof(struct stPointObject);
         break;
+    case obj_rectangle:
+        sizeStruct = sizeof(struct stRectangleObject);
+        break;
+    case obj_2DSprite:
+        sizeStruct = sizeof(struct st2DSpriteObject);
+        break;
     default:
         return NULL;
     }
@@ -70,7 +78,7 @@ struct stEmtyObject* createObject(struct stGroupObject* group /* can be NULL - M
     newObject->type = type;
     newObject->name = NULL;
 
-    if (type == obj_group) {
+    if ((type & ~obj_bVisible) == obj_group) {
         ((struct stGroupObject*)newObject)->objects = null;
         ((struct stGroupObject*)newObject)->indexObject = null;
     }
@@ -79,6 +87,11 @@ struct stEmtyObject* createObject(struct stGroupObject* group /* can be NULL - M
     else {
         newObject->backGroup = null;
         newObject->indexThisObjectInBackGroup = null;
+    }
+
+    if ((type & ~obj_bVisible) == obj_base) {
+        ((struct stBaseObject*)newObject)->textureObj = -1;
+        ((struct stBaseObject*)newObject)->fileModel = null;
     }
 
     if (coord == null) coord = &emtyCoord;
@@ -102,34 +115,12 @@ struct stEmtyObject* createObject(struct stGroupObject* group /* can be NULL - M
     newObject->color.blue = 0;
     newObject->color.alpha = 255;
 
-#ifdef fuseDEBUG_OBJECTSYSTEM
-
-#endif // fuseDEBUG_OBJECTSYSTEM
-
     return newObject;
 }
 
+// TODO!!!!
 void handlingObject(struct stGroupObject* object) { // TODO
-    if ((object->type & ~obj_bVisible) == obj_group) {
-        struct stGroupObject** objectsArr = (struct stGroupObject**)(object->objects);
-
-        float DposX = object->pos.x - object->lastPos.x;
-        float DposY = object->pos.y - object->lastPos.y;
-        float DposZ = object->pos.z - object->lastPos.z;
-
-        object->lastPos.x = object->pos.x;
-        object->lastPos.y = object->pos.y;
-        object->lastPos.z = object->pos.z;
-
-        for (uint i = 0; i < object->indexObject; i++) {
-            objectsArr[i]->pos.x += DposX;
-            objectsArr[i]->pos.y += DposY;
-            objectsArr[i]->pos.z += DposZ;
-
-            if ((objectsArr[i]->type & ~obj_bVisible) == obj_group)
-                handlingObject(objectsArr[i]);
-        }
-    }
+    
 }
 
 void stEmtyObject::setScale(float x, float y, float z) {
@@ -204,6 +195,12 @@ void stEmtyObject::setColorBlue(byte blue) {
     this->color.blue = blue;
 }
 
+void stEmtyObject::setVisible(bool type) {
+    if (this == null) return;
+    if (type == true) this->type = this->type | obj_bVisible;
+    else this->type = this->type & ~obj_bVisible;
+}
+
 void stGroupObject::addObject(struct stEmtyObject* object) {
     if (object == 0) return;
 
@@ -227,25 +224,33 @@ void stGroupObject::subObject(struct stEmtyObject* object) { // TODO
 }
 
 struct stGroupObject* getMainGroup() {
-    return &mainGroup;
+    return mainGroup;
 }
 
 void objectSystemInit() {
-    mainGroup.name = (char*) "mainGroup";
-    mainGroup.type = obj_group | obj_bVisible;
+    mainGroup = (struct stGroupObject*)createObject((struct stGroupObject*)obj_nogoup, obj_group | obj_bVisible, null, null, null);
+    mainGroup->name = (char*) "mainGroup";
+
+    baseGeometry = (struct stGroupObject*)createObject(mainGroup, obj_group | obj_bVisible, null, null, null);
+    baseGeometry->name = (char*) "baseGeometry";
+
+    mainCamera = (struct stCamObject*)createObject(mainGroup, obj_cam, null, null, null);
+    mainCamera->name = (char*)"mainCamera";
 }
 
 void delObject(struct stEmtyObject* object) {
-    if (object->type == obj_group) {
+    if (object == null) return;
+
+    if ((object->type & ~obj_bVisible) == obj_group && ((struct stGroupObject*)object)->objects != null) {
         for (uint i = 0; i < ((struct stGroupObject*)object)->indexObject; i++) {
             struct stEmtyObject* tmpobj = ((struct stGroupObject*)object)->objects[i];
 
-            if (tmpobj->type == obj_group) delObject(tmpobj);
+            if ((object->type & ~obj_bVisible) == obj_group) delObject(tmpobj);
 
             free(tmpobj);
         }
     }
-    if (object != &mainGroup) {
+    if (object != mainGroup) {
         if(object->backGroup != null) object->backGroup->subObject(object);
         free(object);
     }
@@ -257,12 +262,83 @@ void moveObject(struct stEmtyObject* object, struct stGroupObject* toGroup) {
 }
 
 struct stEmtyObject* copyObject(struct stEmtyObject* object, struct stGroupObject* toGroup) {
-    
+    if (object == null) return null;
+
+    struct stEmtyObject* newObject = (struct stEmtyObject*)memcopy(object, getObjectSizeType(object));
+    ((struct stGroupObject*)newObject)->indexObject = 0;
+    if ((object->type & ~obj_bVisible) == obj_group && ((struct stGroupObject*)object)->objects != null) {
+        for (uint i = 0; i < ((struct stGroupObject*)object)->indexObject; i++) {
+            ((struct stGroupObject*)newObject)->objects[i] = copyObject(((struct stGroupObject*)object)->objects[i], null);
+            ((struct stGroupObject*)newObject)->indexObject++;
+        }
+    }
+
+    if (toGroup != null) moveObject(newObject, toGroup);
+
+    return newObject;
+}
+
+uint getObjectSizeType(struct stEmtyObject* object) {
+    if (object == null) return 0;
+    switch (object->type & ~obj_bVisible) {
+        case obj_emty:
+            return sizeof(struct stEmtyObject);
+        case obj_base:
+            return sizeof(struct stBaseObject);
+        case obj_group:
+            return sizeof(struct stGroupObject);
+        case obj_cam:
+            return sizeof(struct stCamObject);
+        case obj_light:
+            return sizeof(struct stLightObject);
+        case obj_point:
+            return sizeof(struct stPointObject);
+        case obj_rectangle:
+            return sizeof(struct stRectangleObject);
+        case obj_2DSprite:
+            return sizeof(struct st2DSpriteObject);
+        default:
+            return 0;
+    }
+}
+
+struct stEmtyObject* findObjectByName(struct stGroupObject* group, char* name /*can be null*/, uint ignoreElements) {
+    if (group == null) return null;
+
+    for (uint i = 0; i < group->indexObject; i++) {
+        if (group->objects[i]->name == name) {
+            if (ignoreElements > 0) ignoreElements--;
+            else return group->objects[i];
+        }
+        else if ((group->objects[i]->type & ~obj_bVisible) == obj_group)
+            return findObjectByName((struct stGroupObject*)group->objects[i], name, ignoreElements);
+    }
+
+    return null;
+}
+
+struct stEmtyObject* findObjectByType(struct stGroupObject* group, byte type, uint ignoreElements) {
+    if (group == null) return null;
+
+    for (uint i = 0; i < group->indexObject; i++) {
+        if ((group->objects[i]->type & type) == type) {
+            if (ignoreElements > 0) ignoreElements--;
+            else return group->objects[i];
+        }
+        else if ((group->objects[i]->type & ~obj_bVisible) == obj_group) {
+            struct stEmtyObject* obj = findObjectByType((struct stGroupObject*)group->objects[i], type, ignoreElements);
+            if (obj != null) return obj;
+            if (i >= group->indexObject) return null;
+        }
+    }
+
+    return null;
 }
 
 unsigned int _debugObjectTabs = 0;
 void debugObject(struct stEmtyObject* object) { // TODO
-    printf("%s[0x%X]%c(type = ", (object->name == NULL) ? "" : object->name, object, (object->type & obj_bVisible) ? 'V' : ' ');
+    if (object == null) return;
+    printf("%s[0x%X]%c(type = ", (object->name == NULL) ? "" : object->name, (uint)((void*)object), (object->type & obj_bVisible) ? 'V' : ' ');
 
     switch (object->type & ~obj_bVisible) {
     case obj_base:
@@ -282,6 +358,9 @@ void debugObject(struct stEmtyObject* object) { // TODO
         break;
     case obj_point:
         printf("point");
+        break;
+    case obj_2DSprite:
+        printf("2Dsprite");
         break;
     default:
         printf("%d", (object->type & ~obj_bVisible));

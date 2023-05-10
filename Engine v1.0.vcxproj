@@ -138,6 +138,7 @@
     <ClInclude Include="engineL1.h" />
     <ClInclude Include="fuse.h" />
     <ClInclude Include="objectSystem.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

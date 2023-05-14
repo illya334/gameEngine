@@ -155,9 +155,9 @@ void frame() {
 
 			glColor4ub(255, obj->color.green, obj->color.blue, 255);
 			glVertex3f(obj->pos.x, obj->pos.y, obj->pos.z);
-			glVertex3f(obj->pos2.x, obj->pos.y, obj->pos.z);
 			glVertex3f(obj->pos2.x, obj->pos2.y, obj->pos.z);
 			glVertex3f(obj->pos.x, obj->pos2.y, obj->pos.z);
+			glVertex3f(obj->pos2.x, obj->pos.y, obj->pos.z);
 		}
 	glEnd();
 

@@ -23,6 +23,8 @@ stRectangleObject* rec;
 void start() {
 	objectSystemInit();
 	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	addButtonHandling('R', false);
 	addButtonHandling('T', false);
@@ -44,16 +46,28 @@ void start() {
 	//glCreateProgram = (GLuint (*)())wglGetProcAddress("glCreateProgram");
 
 	struct stCoord pos = { -0.5, 0.5, -3 };
-	st2DSpriteObject *sprite = (st2DSpriteObject*)createObject(mainGroup, obj_2DSprite | obj_bVisible, &pos, null, null);
-	sprite->textureObj = loadTexture((char*)"1.jpg", 0);
-	if (sprite->textureObj == 0) printf("ERROR load file\n");
-	sprite->pos2.x = -0.5;
-	sprite->pos2.y = -0.5;
+	st2DSpriteObject *sprite = (st2DSpriteObject*)createObject(mainGroup, objType_2DSprite | objType_bVisible, &pos, null, null);
+	
+	sprite->textureObj = loadTexture((char*)"1.png", 0);
+	
+	//sprite->textureObj = loadTexture((char*)"1.jpg", 0);
+	//if (sprite->textureObj == 0) printf("ERROR load file\n");
+	sprite->pos2.x = 0.5;
+	sprite->pos2.y = 0.5;
 	sprite->pos2.z = -3;
-	sprite->color.red = 255;
 
-	struct st2DSpriteObject* obj = (struct st2DSpriteObject*)findObjectByType(mainGroup, obj_2DSprite, 0);
-	printf("%X\n", obj);
+	sprite->pos3.x = -0.5;
+	sprite->pos3.y = -0.5;
+	sprite->pos3.z = -3;
+
+	sprite->pos4.x = 0.5;
+	sprite->pos4.y = -0.5;
+	sprite->pos4.z = -3;
+	
+	sprite->color.red = 255;
+	sprite->color.green = 255;
+	sprite->color.blue = 255;
+	sprite->color.alpha = 255;
 
 	rec = drawRectangleGeneralZ(
 		-0.5, 0.5, // 1
@@ -65,6 +79,10 @@ void start() {
 
 	mainCamera->setPosZ(-2);
 	//mainCamera->setAngleY(180);
+
+	struct st3DmodelObject* obj = (struct st3DmodelObject*)createObject(mainGroup, objType_3Dmodel | objType_bVisible, null, null, null);
+	obj->color.green = 125;
+	
 }
 
 const float stepSize = 0.05;
@@ -114,6 +132,8 @@ void loop() {
 	point->pos.x += 0.001;
 }
 
+float texCoord[] = { 0,0, 1,0, 1,1, 0,1 };
+
 void frame() {
 	glLoadIdentity();
 
@@ -125,57 +145,50 @@ void frame() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glClearColor(0, 0, 0, 0);
 
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
+
 	glBegin(GL_POINTS);
-	for (uint i = 0; ; i++) {
-		struct stEmtyObject* obj = findObjectByType(mainGroup, obj_point, i);
-		if (obj == null) break;
-		if ((obj->type & obj_bVisible) != obj_bVisible) continue;
-		glColor4ub(obj->color.red, obj->color.green, obj->color.blue, obj->color.alpha);
-		glVertex3f(obj->pos.x, obj->pos.y, obj->pos.z);
-	}
-	glEnd();
-
-	glBegin(GL_QUADS);
 		for (uint i = 0; ; i++) {
-			struct stRectangleObject* obj = (struct stRectangleObject*)findObjectByType(mainGroup, obj_rectangle, i);
+			struct stEmtyObject* obj = findObjectByType(mainGroup, objType_point, i);
 			if (obj == null) break;
-			if ((obj->type & obj_bVisible) != obj_bVisible) continue;
-
+			if ((obj->type & objType_bVisible) != objType_bVisible) continue;
 			glColor4ub(obj->color.red, obj->color.green, obj->color.blue, obj->color.alpha);
 			glVertex3f(obj->pos.x, obj->pos.y, obj->pos.z);
-			glVertex3f(obj->pos3.x, obj->pos3.y, obj->pos3.z);
-			glVertex3f(obj->pos4.x, obj->pos4.y, obj->pos4.z);
-			glVertex3f(obj->pos2.x, obj->pos2.y, obj->pos2.z);
-		}
-
-		for (uint i = 0; ; i++) {
-			struct st2DSpriteObject* obj = (struct st2DSpriteObject*)findObjectByType(mainGroup, obj_2DSprite, i);
-			if (obj == null) break;
-			if ((obj->type & obj_bVisible) != obj_bVisible) continue;
-
-			glColor4ub(255, obj->color.green, obj->color.blue, 255);
-			glVertex3f(obj->pos.x, obj->pos.y, obj->pos.z);
-			glVertex3f(obj->pos2.x, obj->pos2.y, obj->pos.z);
-			glVertex3f(obj->pos.x, obj->pos2.y, obj->pos.z);
-			glVertex3f(obj->pos2.x, obj->pos.y, obj->pos.z);
 		}
 	glEnd();
 
-	// ÍÅ ÐÀÁÎÒÀÅÒ!!!!
-	/* glBegin(GL_QUADS);
 	for (uint i = 0; ; i++) {
-		struct st2DSpriteObject* obj = (struct st2DSpriteObject*)findObjectByType(mainGroup, obj_2DSprite, i);
+		struct stRectangleObject* obj = (struct stRectangleObject*)findObjectByType(mainGroup, objType_rectangle, i);
 		if (obj == null) break;
-		if ((obj->type & obj_bVisible) != obj_bVisible) continue;
+		if ((obj->type & objType_bVisible) != objType_bVisible) continue;
 
-		glColor4ub(255, obj->color.green, obj->color.blue, 255);
-		glVertex3f(obj->pos.x, obj->pos.y, obj->pos.z);
-		glVertex3f(obj->pos2.x, obj->pos.y, obj->pos.z);
-		glVertex3f(obj->pos2.x, obj->pos2.y, obj->pos.z);
-		glVertex3f(obj->pos.x, obj->pos2.y, obj->pos.z);
+		glColor4ub(obj->color.red, obj->color.green, obj->color.blue, obj->color.alpha);
+
+		glVertexPointer(3, GL_FLOAT, 0, &obj->pos);
+		glDrawArrays(GL_QUADS, 0, 4);
 	}
-	glEnd();*/
 
+	for (uint i = 0; ; i++) {
+		struct st2DSpriteObject* obj = (struct st2DSpriteObject*)findObjectByType(mainGroup, objType_2DSprite, i);
+		if (obj == null) break;
+		if ((obj->type & objType_bVisible) != objType_bVisible) continue;
+
+		glBindTexture(GL_TEXTURE_2D, obj->textureObj);
+
+		//printf("%d\n", obj->textureObj);
+
+		glColor4ub(obj->color.red, obj->color.green, obj->color.blue, obj->color.alpha);
+
+		glVertexPointer(3, GL_FLOAT, 0, &obj->pos);
+		glTexCoordPointer(2, GL_FLOAT, 0, texCoord);
+		glDrawArrays(GL_QUADS, 0, 4);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void end() {
@@ -193,7 +206,7 @@ struct stPointObject* drawPoint(float X, float Y, float Z, byte red, byte green,
 	_coord.x = X;
 	_coord.y = Y;
 	_coord.z = Z;
-	struct stPointObject* _point = (struct stPointObject*)createObject(baseGeometry, obj_point | obj_bVisible, &_coord, null, null);
+	struct stPointObject* _point = (struct stPointObject*)createObject(baseGeometryGroup, objType_point | objType_bVisible, &_coord, null, null);
 	_point->color.red = red;
 	_point->color.green = green;
 	_point->color.blue = blue;
@@ -208,7 +221,7 @@ struct stRectangleObject* drawRectangle(
 		byte red, byte green, byte blue
 	) {
 	struct stCoord _coord = {X1, Y1, Z1};
-	struct stRectangleObject* _rectangle = (struct stRectangleObject*)createObject(baseGeometry, obj_rectangle | obj_bVisible, &_coord, null, null);
+	struct stRectangleObject* _rectangle = (struct stRectangleObject*)createObject(baseGeometryGroup, objType_rectangle | objType_bVisible, &_coord, null, null);
 	_rectangle->color.red = red;
 	_rectangle->color.green = green;
 	_rectangle->color.blue = blue;
@@ -243,16 +256,33 @@ struct stRectangleObject* drawRectangleGeneralZ(
 uint loadTexture(char* fileName, int levelDetal) {
 	int w, h, comp;
 	uint textureObj;
-	char *data = (char*)stbi_load(fileName, &w, &h, &comp, 0);
-	if (data == 0) return 0;
+	struct RGBA *data = (RGBA*)stbi_load(fileName, &w, &h, &comp, 0);
+	if (data == 0) {
+		printf("ERROR loading!\n");
+		return 0;
+	}
+
+	/*struct { unsigned char r, g, b, a; } data[2][2];
+	memset(data, 0, sizeof(data));
+
+	data[0][0].r = 255;
+	data[1][0].g = 255;
+	data[1][1].b = 255;
+	data[0][1].r = 255;
+	data[0][1].g = 255;*/
+
+	//printf("color: (%d, %d, %d, %d)\n", data->r, data->g, data->b, data->a);
 
 	glGenTextures(1, &textureObj);
 	glBindTexture(GL_TEXTURE_2D, textureObj);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, levelDetal, GL_RGBA, w, h, 0, comp == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	int err = glGetError();
+	if (err) printf("glTexImage2D: %d;\n", err);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	stbi_image_free(data);
+
 	return textureObj;
 }
 

@@ -8,27 +8,27 @@
     #include "define.h"
 
     extern struct stGroupObject *mainGroup;
-    extern struct stGroupObject* baseGeometry;
+    extern struct stGroupObject* baseGeometryGroup;
     extern struct stCamObject* mainCamera;
 
     enum {
 
-        obj_err         = -1,
-        obj_nogoup      = -1,
+        objType_err         = -1,
+        objType_nogoup      = -1,
 
-        obj_emty        = 0,
-        obj_base        = 1,
-        obj_group       = 2,
-        obj_cam         = 3,
-        obj_light       = 4,
-        obj_point       = 5,
-        obj_rectangle   = 6,
-        obj_2DSprite    = 7,
+        objType_emty        = 0,
+        objType_3Dmodel     = 1,
+        objType_group       = 2,
+        objType_cam         = 3,
+        objType_light       = 4,
+        objType_point       = 5,
+        objType_rectangle   = 6,
+        objType_2DSprite    = 7,
 
         // MAX 127 types object
         // Незабувати додавати ці типи у функції!
 
-        obj_bVisible    = (1 << 7) // (obj_emty | obj_bVisible)
+        objType_bVisible    = (1 << 7) // (obj_emty | obj_bVisible)
     };
 
     typedef struct stCoord {
@@ -55,9 +55,9 @@
         uint indexThisObjectInBackGroup;
 
         struct stScale scale;
-        struct stCoord pos;
         struct stColor color;
         struct stAngle angle;
+        struct stCoord pos;
 
         void setScale(float x, float y, float z);
         void setScaleX(float x);
@@ -83,7 +83,7 @@
     } stEmtyObject;
 
     // TODO
-    typedef struct stBaseObject : public stEmtyObject {
+    typedef struct st3DmodelObject : public stEmtyObject {
         //byte type; // 1
 
         float* vertices;
@@ -96,7 +96,7 @@
         uint addVertice(float x, float y, float z); // (-1) - error, else it is index.
         bool delVerticePos(float x, float y, float z);
         bool delVerticeIndex(uint index);
-    } stBaseObject;
+    } st3DmodelObject;
 
     typedef struct stGroupObject : public stEmtyObject {
         //byte type; // 2
@@ -126,16 +126,15 @@
     typedef struct stRectangleObject : public stEmtyObject {
         //byte type; // 6
         struct stCoord pos2;
-        struct stCoord pos3;
         struct stCoord pos4;
+        struct stCoord pos3;
     } stRectangleObject;
 
-    typedef struct st2DSpriteObject : public stEmtyObject {
+    typedef struct st2DSpriteObject : public stRectangleObject {
         //byte type; // 7
-        void* fileModel;
-        uint textureObj;
 
-        struct stCoord pos2;
+        uint textureObj;
+        byte bPTC; // point to the camera - повертається у напрямок камери, кут повороту це дедатній кут після розрахунків.
     } st2DSpriteObject;
 
     struct stEmtyObject* createObject(struct stGroupObject* group /* can be NULL - MainGroup or (-1) - without group */, uint8_t type, struct stCoord* coord /* can be null */, struct stAngle* angle /* can be null */, struct stScale* scale /* can be null */);
@@ -148,5 +147,14 @@
     struct stEmtyObject* findObjectByName(struct stGroupObject* group, char* name /*can be null*/, uint ignoreElements);
     struct stEmtyObject* findObjectByType(struct stGroupObject* group, byte type, uint ignoreElements);
     void debugObject(struct stEmtyObject* object);
+
+
+    struct RGB {
+        unsigned char r, g, b;
+    };
+
+    struct RGBA {
+        unsigned char r, g, b, a;
+    };
 
 #endif // OBJECTSYSTEM_H_INCLUDED

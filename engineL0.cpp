@@ -179,8 +179,9 @@ void engineL0Init( void (*funcStart)(), void (*funcLoop)(), void (*funcFrame)(),
 	cfuncEnd = funcEnd;
 
 	HINSTANCE hInstance = GetModuleHandleA(NULL);
+	HCURSOR hCursor = LoadCursor(NULL, IDC_ARROW);
 	MSG msg;
-	WNDCLASSA wnd = {NULL, &wndProc, NULL, NULL, hInstance, NULL, NULL, NULL, NULL, "Engine"};
+	WNDCLASSA wnd = {NULL, &wndProc, NULL, NULL, hInstance, NULL, hCursor, NULL, NULL, "Engine"};
 
 	register ATOM tmpATOM = RegisterClassA(&wnd);
 	if (tmpATOM == NULL)	errorFunc("RegisterClassA");

@@ -1,0 +1,23 @@
+﻿  engineL1.cpp
+C:\Users\zeq52giw\source\repos\Engine v1.0\fuse.h(29,1): warning C4005: 'FUSE_SUPPORT_KEYBOARD': macro redefinition
+C:\Users\zeq52giw\source\repos\Engine v1.0\fuse.h(22,1): message : see previous definition of 'FUSE_SUPPORT_KEYBOARD'
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(88,28): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(89,30): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(101,67): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(102,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(103,67): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(106,67): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(107,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(108,67): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(111,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(113,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(116,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(118,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(132,23): warning C4305: '+=': truncation from 'double' to 'float'
+  objectSystem.cpp
+  Generating code
+  2 of 190 functions ( 1.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    9 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Engine v1.0.vcxproj -> C:\Users\zeq52giw\source\repos\Engine v1.0\Release\Engine v1.0.exe

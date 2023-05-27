@@ -1,0 +1,18 @@
+﻿  engineL1.cpp
+C:\Users\zeq52giw\source\repos\Engine v1.0\fuse.h(29,1): warning C4005: 'FUSE_SUPPORT_KEYBOARD': macro redefinition
+C:\Users\zeq52giw\source\repos\Engine v1.0\fuse.h(22,1): message : see previous definition of 'FUSE_SUPPORT_KEYBOARD'
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(56,9): warning C4477: 'printf' : format string '%X' requires an argument of type 'unsigned int', but variadic argument 1 has type 'st2DSpriteObject *'
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(70,28): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(71,30): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(83,67): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(84,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(85,67): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(88,67): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(89,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(90,67): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(93,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(95,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(98,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(100,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(114,23): warning C4305: '+=': truncation from 'double' to 'float'
+  Engine v1.0.vcxproj -> C:\Users\zeq52giw\source\repos\Engine v1.0\Debug\Engine v1.0.exe

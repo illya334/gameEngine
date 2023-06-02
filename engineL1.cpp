@@ -45,13 +45,12 @@ void start() {
 
 	//glCreateProgram = (GLuint (*)())wglGetProcAddress("glCreateProgram");
 
-	struct stCoord pos = { -0.5, 0.5, -3 };
+	struct stCoord pos = {-0.5, 0.5, -3};
 	st2DSpriteObject *sprite = (st2DSpriteObject*)createObject(mainGroup, objType_2DSprite | objType_bVisible, &pos, null, null);
 	
 	sprite->textureObj = loadTexture((char*)"1.png", 0);
-	
-	//sprite->textureObj = loadTexture((char*)"1.jpg", 0);
-	//if (sprite->textureObj == 0) printf("ERROR load file\n");
+	if (sprite->textureObj == 0) printf("ERROR load file\n");
+
 	sprite->pos2.x = 0.5;
 	sprite->pos2.y = 0.5;
 	sprite->pos2.z = -3;
@@ -77,12 +76,13 @@ void start() {
 		3, // Z
 		0, 255, 0); // color
 
-	mainCamera->setPosZ(-2);
+	mainCamera->setPosZ(5);
 	//mainCamera->setAngleY(180);
 
-	struct st3DmodelObject* obj = (struct st3DmodelObject*)createObject(mainGroup, objType_3Dmodel | objType_bVisible, null, null, null);
-	obj->color.green = 125;
+	//struct st3DmodelObject* obj = (struct st3DmodelObject*)createObject(mainGroup, objType_3Dmodel | objType_bVisible, null, null, null);
+	//obj->color.green = 125;
 	
+	//printf("\nStartfunc - OK\n");
 }
 
 const float stepSize = 0.05;
@@ -130,6 +130,8 @@ void loop() {
 	//printf("X: %d, Y: %d; BX: %d, BY: %d\n", mouseDifX, mouseDifY, mouseX, mouseY);
 
 	point->pos.x += 0.001;
+
+	//printf("Loopfunc - OK\n");
 }
 
 float texCoord[] = { 0,0, 1,0, 1,1, 0,1 };
@@ -158,6 +160,7 @@ void frame() {
 		}
 	glEnd();
 
+	glBegin(GL_QUADS);
 	for (uint i = 0; ; i++) {
 		struct stRectangleObject* obj = (struct stRectangleObject*)findObjectByType(mainGroup, objType_rectangle, i);
 		if (obj == null) break;
@@ -165,10 +168,16 @@ void frame() {
 
 		glColor4ub(obj->color.red, obj->color.green, obj->color.blue, obj->color.alpha);
 
-		glVertexPointer(3, GL_FLOAT, 0, &obj->pos);
-		glDrawArrays(GL_QUADS, 0, 4);
-	}
+		glVertex3f(obj->pos.x, obj->pos.y, obj->pos.z);
+		glVertex3f(obj->pos2.x, obj->pos2.y, obj->pos2.z);
+		glVertex3f(obj->pos4.x, obj->pos4.y, obj->pos4.z);
+		glVertex3f(obj->pos3.x, obj->pos3.y, obj->pos3.z);
+		
 
+		//glVertexPointer(3, GL_FLOAT, 0, &obj->pos);
+		//glDrawArrays(GL_QUADS, 0, 4);
+	}
+	glEnd();
 	for (uint i = 0; ; i++) {
 		struct st2DSpriteObject* obj = (struct st2DSpriteObject*)findObjectByType(mainGroup, objType_2DSprite, i);
 		if (obj == null) break;
@@ -180,15 +189,28 @@ void frame() {
 
 		glColor4ub(obj->color.red, obj->color.green, obj->color.blue, obj->color.alpha);
 
+		//glColor4f(1, 1, 1, 1);
+
+		//glTexCoord2f(0, 0);
+		//glVertex3f(obj->pos.x, obj->pos.y, obj->pos.z);
+		//glTexCoord2f(0, 1);
+		//glVertex3f(obj->pos2.x, obj->pos2.y, obj->pos2.z);
+		//glTexCoord2f(1, 0);
+		//glVertex3f(obj->pos4.x, obj->pos4.y, obj->pos4.z);
+		//glTexCoord2f(1, 1);
+		//glVertex3f(obj->pos3.x, obj->pos3.y, obj->pos3.z);
+
+
 		glVertexPointer(3, GL_FLOAT, 0, &obj->pos);
-		glTexCoordPointer(2, GL_FLOAT, 0, texCoord);
+		//glTexCoordPointer(2, GL_FLOAT, 0, texCoord);
 		glDrawArrays(GL_QUADS, 0, 4);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
+
+	//printf("Framefunc - OK\n");
 }
 
 void end() {
@@ -261,7 +283,6 @@ uint loadTexture(char* fileName, int levelDetal) {
 		printf("ERROR loading!\n");
 		return 0;
 	}
-
 	/*struct { unsigned char r, g, b, a; } data[2][2];
 	memset(data, 0, sizeof(data));
 
@@ -275,6 +296,7 @@ uint loadTexture(char* fileName, int levelDetal) {
 
 	glGenTextures(1, &textureObj);
 	glBindTexture(GL_TEXTURE_2D, textureObj);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -285,4 +307,5 @@ uint loadTexture(char* fileName, int levelDetal) {
 
 	return textureObj;
 }
+
 

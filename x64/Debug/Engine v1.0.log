@@ -14,9 +14,4 @@ C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(113,62): warning C4244: 
 C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(116,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(118,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(132,23): warning C4305: '+=': truncation from 'double' to 'float'
-  Generating code
-  3 of 46 functions ( 6.5%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
-  Finished generating code
-  Engine v1.0.vcxproj -> C:\Users\zeq52giw\source\repos\Engine v1.0\Release\Engine v1.0.exe
+  Engine v1.0.vcxproj -> C:\Users\zeq52giw\source\repos\Engine v1.0\x64\Debug\Engine v1.0.exe

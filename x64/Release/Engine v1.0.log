@@ -1,4 +1,15 @@
-﻿  engineL1.cpp
+﻿  engineL0.cpp
+C:\Users\zeq52giw\source\repos\Engine v1.0\fuse.h(29,1): warning C4005: 'FUSE_SUPPORT_KEYBOARD': macro redefinition
+C:\Users\zeq52giw\source\repos\Engine v1.0\fuse.h(22,1): message : see previous definition of 'FUSE_SUPPORT_KEYBOARD'
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL0.cpp(426,122): warning C4311: 'type cast': pointer truncation from 'HANDLE' to 'unsigned int'
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL0.cpp(426,122): warning C4302: 'type cast': truncation from 'HANDLE' to 'unsigned int'
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL0.cpp(430,33): warning C4312: 'type cast': conversion from 'unsigned int' to 'HANDLE' of greater size
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL0.cpp(436): warning C4312: 'type cast': conversion from 'unsigned int' to 'HANDLE' of greater size
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL0.cpp(437): warning C4312: 'type cast': conversion from 'unsigned int' to 'HANDLE' of greater size
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL0.cpp(443): warning C4312: 'type cast': conversion from 'unsigned int' to 'HANDLE' of greater size
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL0.cpp(444): warning C4312: 'type cast': conversion from 'unsigned int' to 'HANDLE' of greater size
+C:\Users\zeq52giw\source\repos\Engine v1.0\engineL0.cpp(449,33): warning C4312: 'type cast': conversion from 'unsigned int' to 'HANDLE' of greater size
+  engineL1.cpp
 C:\Users\zeq52giw\source\repos\Engine v1.0\fuse.h(29,1): warning C4005: 'FUSE_SUPPORT_KEYBOARD': macro redefinition
 C:\Users\zeq52giw\source\repos\Engine v1.0\fuse.h(22,1): message : see previous definition of 'FUSE_SUPPORT_KEYBOARD'
 C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(88,28): warning C4305: 'initializing': truncation from 'double' to 'float'
@@ -14,9 +25,15 @@ C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(113,62): warning C4244: 
 C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(116,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(118,62): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 C:\Users\zeq52giw\source\repos\Engine v1.0\engineL1.cpp(132,23): warning C4305: '+=': truncation from 'double' to 'float'
+  main.cpp
+C:\Users\zeq52giw\source\repos\Engine v1.0\fuse.h(29,1): warning C4005: 'FUSE_SUPPORT_KEYBOARD': macro redefinition
+C:\Users\zeq52giw\source\repos\Engine v1.0\fuse.h(22,1): message : see previous definition of 'FUSE_SUPPORT_KEYBOARD'
+  objectSystem.cpp
+C:\Users\zeq52giw\source\repos\Engine v1.0\objectSystem.cpp(341,99): warning C4311: 'type cast': pointer truncation from 'void *' to 'unsigned int'
+C:\Users\zeq52giw\source\repos\Engine v1.0\objectSystem.cpp(341,99): warning C4302: 'type cast': truncation from 'void *' to 'unsigned int'
   Generating code
-  Finished generating code
-  3 of 187 functions ( 1.6%) were compiled, the rest were copied from previous compilation.
+  187 of 187 functions (100.0%) were compiled.
     0 functions were new in current compilation
-    9 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
   Engine v1.0.vcxproj -> C:\Users\zeq52giw\source\repos\Engine v1.0\x64\Release\Engine v1.0.exe
